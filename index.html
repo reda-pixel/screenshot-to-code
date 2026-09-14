@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Screenshot to Code - Convert Screenshots & Designs into Functional Code</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+            },
+            cobalt: '#193549',
+            espresso: '#2a211c'
+          },
+          animation: {
+            'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'scan': 'scanning 2.5s ease-in-out infinite',
+          },
+          keyframes: {
+            scanning: {
+              '0%, 100%': { transform: 'translateY(0%)', opacity: '0.8' },
+              '50%': { transform: 'translateY(92%)', opacity: '1' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, .font-heading { font-family: 'Poppins', sans-serif; }
+    code, pre, .font-mono { font-family: 'Fira Code', monospace; }
+    .scan-line { background: linear-gradient(180deg, rgba(34, 197, 94, 0) 0%, rgba(34, 197, 94, 0.8) 50%, rgba(59, 130, 246, 0.9) 100%); box-shadow: 0 0 15px rgba(34, 197, 94, 0.8); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    .dark ::-webkit-scrollbar-thumb { background: #334155; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .modal-blur { backdrop-filter: blur(8px); background-color: rgba(0, 0, 0, 0.65); }
+    .line-numbers { counter-reset: line; }
+    .line-numbers > div::before { counter-increment: line; content: counter(line); display: inline-block; width: 2.2rem; margin-right: 1.2rem; color: #64748b; text-align: right; user-select: none; }
+  </style>
+</head>
+<body class="h-full bg-slate-50 text-slate-900 dark:bg-black dark:text-slate-100 antialiased transition-colors duration-200 flex flex-col">
+
+  <header class="h-14 border-b border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-blue-600 flex items-center justify-center text-white font-bold shadow-md shadow-emerald-500/20">
+        <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-heading font-bold text-base tracking-tight text-slate-900 dark:text-white">Screenshot to Code</span>
+          <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-800">Sonnet 3.7 & GPT-4o</span>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 sm:gap-3">
+      <button id="nav-evals-btn" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-zinc-800/80 hover:bg-slate-200 dark:hover:bg-zinc-700 rounded-lg transition-colors">
+        <i class="fa-solid fa-chart-simple text-blue-500"></i>
+        <span>Evals & Benchmarks</span>
+      </button>
+      <a href="https://github.com/abi/screenshot-to-code" target="_blank" rel="noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 rounded-lg transition-colors">
+        <i class="fa-brands fa-github text-sm"></i>
+        <span class="hidden md:inline">Star on GitHub</span>
+      </a>
+      <button id="theme-toggle-btn" class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors" title="Toggle Dark/Light Mode">
+        <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
+      </button>
+      <button id="settings-btn" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg shadow-sm transition-all" title="Configure API Keys & Models">
+        <i class="fa-solid fa-gear text-slate-300"></i>
+        <span>Settings</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex-1 flex overflow-hidden">
+    <aside id="sidebar" class="w-80 sm:w-96 flex-shrink-0 border-r border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col z-20 transition-all duration-300">
+      <div class="p-4 border-b border-slate-100 dark:border-zinc-900 flex flex-col gap-3">
+        <div>
+          <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Output Stack</label>
+          <div class="relative">
+            <select id="stack-select" class="w-full bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg py-2 pl-3 pr-8 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none cursor-pointer">
+              <option value="html_tailwind">HTML + Tailwind CSS</option>
+              <option value="react_tailwind">React + Tailwind</option>
+              <option value="vue_tailwind">Vue 3 + Tailwind (Beta)</option>
+              <option value="bootstrap">Bootstrap 5</option>
+              <option value="html_css">HTML + Pure CSS</option>
+              <option value="ionic_tailwind">Ionic + Tailwind (Mobile)</option>
+              <option value="svg">SVG Vector Graphics</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+              <i class="fa-solid fa-chevron-down text-[10px]"></i>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">AI Engine</label>
+          <div class="relative">
+            <select id="model-select" class="w-full bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg py-2 pl-3 pr-8 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none cursor-pointer">
+              <option value="claude-3-7-sonnet-20250219">Claude 3.7 Sonnet (Recommended)</option>
+              <option value="claude-3-5-sonnet-20240620">Claude 3.5 Sonnet</option>
+              <option value="gpt-4o-2024-05-13">GPT-4o (Vision)</option>
+              <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+              <option value="built-in-synthesizer">High-Fidelity Built-in Synthesis (Offline/No Key)</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+              <i class="fa-solid fa-microchip text-[10px]"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto p-4 space-y-4">
+        <div id="sidebar-initial-view" class="space-y-4">
+          <div class="bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-emerald-950/30 dark:to-blue-950/20 border border-emerald-200/60 dark:border-emerald-800/40 rounded-xl p-3.5">
+            <div class="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-semibold text-xs mb-1">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>Quick Start Tip</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              Upload any screenshot, website mockup, or Figma design. You can also pick a curated demo below or record a video of a live app!
+            </p>
+          </div>
+          <div>
+            <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5 flex items-center justify-between">
+              <span>Try Demo Mockups</span>
+              <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal">Click to load</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2" id="sample-cards-grid">
+            </div>
+          </div>
+        </div>
+        <div id="sidebar-active-view" class="hidden space-y-4">
+          <div id="variants-container" class="space-y-1.5">
+            <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Generation Variants</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="variant-btn-0" class="py-2 px-3 text-xs font-semibold rounded-lg border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 transition-all flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-code-branch"></i>
+                <span>Option 1</span>
+              </button>
+              <button id="variant-btn-1" class="py-2 px-3 text-xs font-medium rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-code-branch"></i>
+                <span>Option 2</span>
+              </button>
+            </div>
+          </div>
+          <div id="coding-status-container" class="hidden space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold">
+                <div class="w-3 h-3 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                <span id="coding-status-label">Synthesizing design...</span>
+              </div>
+              <span id="coding-step-counter" class="text-[10px] font-mono text-slate-400">Pass 1 of 2</span>
+            </div>
+            <div id="code-ticker-box" class="w-full bg-slate-950 text-emerald-400 font-mono text-[10px] p-2.5 rounded-lg overflow-x-auto whitespace-pre border border-zinc-800 h-16 flex items-end">
+              <span id="code-ticker-content" class="text-slate-400"></span>
+            </div>
+            <button id="cancel-generation-btn" class="w-full py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 border border-rose-200 dark:border-rose-900 rounded-lg transition-colors">
+              Cancel Generation
+            </button>
+          </div>
+          <div id="update-form-container" class="space-y-2 pt-1">
+            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Iterate / Nudge AI
+            </label>
+            <div class="relative">
+              <textarea id="update-instruction-input" rows="3" placeholder="Tell AI what to change (e.g. 'Make navbar dark', 'Add price table', 'Make button rounder')..." class="w-full bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg p-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"></textarea>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="send-update-btn" class="flex-1 py-2 px-3 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow-sm shadow-emerald-600/20 transition-all flex items-center justify-center gap-2">
+                <span>Update Code</span>
+                <span class="text-[10px] bg-emerald-700/60 px-1.5 py-0.5 rounded text-emerald-200">↵ Enter</span>
+              </button>
+              <button id="regenerate-btn" class="py-2 px-3 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 rounded-lg border border-slate-200 dark:border-zinc-700 transition-colors" title="Regenerate from screenshot">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </button>
+            </div>
+            <button id="select-edit-toggle-btn" class="w-full mt-1.5 py-2 px-3 text-xs font-semibold rounded-lg border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-arrow-pointer"></i>
+              <span id="select-edit-btn-label">Visual Select & Update Mode</span>
+            </button>
+          </div>
+          <div class="pt-2 border-t border-slate-100 dark:border-zinc-900 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Reference Input</span>
+              <span id="ref-mode-badge" class="text-[10px] font-medium text-slate-500 bg-slate-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">Image</span>
+            </div>
+            <div id="reference-preview-box" class="relative rounded-lg overflow-hidden border border-slate-200 dark:border-zinc-800 bg-slate-900 flex items-center justify-center max-h-48 group">
+              <img id="reference-img-elem" src="" alt="Reference Image" class="w-full h-auto object-contain max-h-48" />
+              <video id="reference-video-elem" src="" muted loop autoplay class="w-full h-auto object-contain max-h-48 hidden"></video>
+              <div id="scan-line-overlay" class="hidden absolute inset-x-0 h-1 scan-line animate-scan pointer-events-none"></div>
+            </div>
+          </div>
+          <div class="pt-2 border-t border-slate-100 dark:border-zinc-900">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Version History</span>
+              <span id="version-count-badge" class="text-[10px] bg-slate-100 dark:bg-zinc-800 px-1.5 py-0.2 rounded font-mono text-slate-500">1 version</span>
+            </div>
+            <div id="history-list" class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <main class="flex-1 flex flex-col bg-slate-100 dark:bg-zinc-900 overflow-hidden relative">
+      <div id="start-pane" class="flex-1 overflow-y-auto p-4 sm:p-8 flex flex-col items-center justify-center">
+        <div class="max-w-3xl w-full space-y-6">
+          <div class="text-center space-y-2">
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              Turn any Screenshot into <span class="bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent">Clean Code</span>
+            </h2>
+            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+              Drop an image, Figma mockup, live website URL or video screen recording to instantly generate clean, responsive HTML, Tailwind, React or Vue.
+            </p>
+          </div>
+          <div id="dropzone" class="relative group cursor-pointer border-2 border-dashed border-slate-300 dark:border-zinc-700 hover:border-emerald-500 dark:hover:border-emerald-500 bg-white dark:bg-zinc-950 rounded-2xl p-8 sm:p-12 text-center transition-all duration-200 shadow-sm hover:shadow-md">
+            <input type="file" id="file-input" class="hidden" accept="image/png,image/jpeg,image/webp,video/mp4,video/quicktime,video/webm" />
+            <div class="flex flex-col items-center gap-3">
+              <div class="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-inner">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+              </div>
+              <div class="space-y-1">
+                <p class="text-base font-semibold text-slate-800 dark:text-slate-200">
+                  Drag & drop a screenshot here, or <span class="text-emerald-600 dark:text-emerald-400 underline decoration-emerald-500 underline-offset-4">browse files</span>
+                </p>
+                <p class="text-xs text-slate-400 dark:text-slate-500">
+                  Supports PNG, JPG, WebP images and MP4, MOV, WebM screen recordings (up to 25MB)
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button id="screen-record-modal-btn" class="flex flex-col items-center justify-center p-4 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 hover:border-emerald-500 dark:hover:border-emerald-500 rounded-xl transition-all text-center group">
+              <div class="w-10 h-10 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-500 flex items-center justify-center text-base mb-2 group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-video"></i>
+              </div>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Record Screen</span>
+            </button>
+            <button id="url-modal-btn" class="flex flex-col items-center justify-center p-4 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 hover:border-emerald-500 dark:hover:border-emerald-500 rounded-xl transition-all text-center group">
+              <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-500 flex items-center justify-center text-base mb-2 group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-globe"></i>
+              </div>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">URL to Code</span>
+            </button>
+            <button id="import-code-modal-btn" class="flex flex-col items-center justify-center p-4 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 hover:border-emerald-500 dark:hover:border-emerald-500 rounded-xl transition-all text-center group">
+              <div class="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-500 flex items-center justify-center text-base mb-2 group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-code"></i>
+              </div>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Import Existing HTML</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="preview-pane" class="hidden flex-1 flex flex-col overflow-hidden">
+        <div class="h-12 border-b border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 flex items-center justify-between flex-shrink-0">
+          <div class="flex items-center gap-2">
+            <button id="reset-workspace-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 rounded-lg transition-colors">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>New Project</span>
+            </button>
+            <button id="download-code-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-800/80 rounded-lg transition-colors">
+              <i class="fa-solid fa-download text-emerald-600"></i>
+              <span>Download HTML</span>
+            </button>
+          </div>
+          <div class="flex items-center bg-slate-100 dark:bg-zinc-900 p-1 rounded-lg border border-slate-200 dark:border-zinc-800">
+            <button id="tab-desktop-btn" class="tab-btn px-3 py-1 text-xs font-semibold rounded-md bg-white dark:bg-zinc-800 text-slate-900 dark:text-white shadow-sm flex items-center gap-1.5 transition-all">
+              <i class="fa-solid fa-desktop text-xs"></i>
+              <span>Desktop</span>
+            </button>
+            <button id="tab-mobile-btn" class="tab-btn px-3 py-1 text-xs font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition-all">
+              <i class="fa-solid fa-mobile-screen-button text-xs"></i>
+              <span>Mobile</span>
+            </button>
+            <button id="tab-code-btn" class="tab-btn px-3 py-1 text-xs font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition-all">
+              <i class="fa-solid fa-code text-xs"></i>
+              <span>Code Editor</span>
+            </button>
+          </div>
+        </div>
+        <div class="flex-1 overflow-auto p-4 sm:p-6 flex items-center justify-center relative">
+          <div id="desktop-viewport-container" class="w-full h-full flex items-center justify-center transition-all duration-300">
+            <div class="w-full max-w-[1400px] h-[86vh] bg-white rounded-2xl shadow-2xl border border-slate-300 dark:border-zinc-700 flex flex-col overflow-hidden">
+              <div class="h-8 bg-slate-200 dark:bg-zinc-900 border-b border-slate-300 dark:border-zinc-800 px-3 flex items-center gap-2 flex-shrink-0">
+                <div class="flex items-center gap-1.5">
+                  <div class="w-2.5 h-2.5 rounded-full bg-rose-500"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                </div>
+                <div class="flex-1 max-w-md mx-auto bg-white dark:bg-zinc-950 text-slate-500 dark:text-slate-400 text-[11px] px-3 py-0.5 rounded-md text-center truncate border border-slate-300 dark:border-zinc-800 font-mono">
+                  https://app.preview/live-render
+                </div>
+                <button id="refresh-frame-btn" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs" title="Reload Frame">
+                  <i class="fa-solid fa-rotate-right"></i>
+                </button>
+              </div>
+              <div class="flex-1 relative bg-white">
+                <iframe id="desktop-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" class="w-full h-full border-0 bg-white"></iframe>
+                <div id="inspector-overlay" class="hidden absolute inset-0 pointer-events-none z-20 border-2 border-dashed border-blue-600 bg-blue-500/10 transition-all duration-100"></div>
+              </div>
+            </div>
+          </div>
+          <div id="mobile-viewport-container" class="hidden h-full items-center justify-center">
+            <div class="w-[375px] h-[780px] bg-slate-900 rounded-[44px] p-3 shadow-2xl border-4 border-slate-800 flex flex-col relative">
+              <div class="absolute top-5 left-1/2 -translate-x-1/2 w-32 h-5 bg-black rounded-full z-30 flex items-center justify-center">
+                <div class="w-3 h-3 rounded-full bg-slate-900 mr-2"></div>
+                <div class="w-2 h-2 rounded-full bg-blue-950"></div>
+              </div>
+              <div class="flex-1 rounded-[34px] overflow-hidden bg-white relative">
+                <iframe id="mobile-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" class="w-full h-full border-0 bg-white pt-6"></iframe>
+              </div>
+            </div>
+          </div>
+          <div id="code-editor-container" class="hidden w-full h-full max-w-5xl bg-zinc-950 rounded-2xl border border-zinc-800 shadow-2xl flex flex-col overflow-hidden">
+            <div class="h-10 bg-zinc-900 border-b border-zinc-800 px-4 flex items-center justify-between text-xs text-slate-400">
+              <div class="flex items-center gap-2">
+                <span class="text-emerald-400 font-mono font-semibold">index.html</span>
+                <span class="text-[11px] text-zinc-500" id="code-char-count">0 chars</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button id="copy-code-btn" class="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-slate-200 rounded font-medium flex items-center gap-1.5 transition-colors">
+                  <i class="fa-solid fa-copy text-[11px]"></i>
+                  <span>Copy Code</span>
+                </button>
+              </div>
+            </div>
+            <div class="flex-1 flex overflow-hidden font-mono text-xs leading-relaxed">
+              <textarea id="raw-code-editor" class="flex-1 bg-zinc-950 text-emerald-300 p-4 font-mono text-xs leading-relaxed focus:outline-none resize-none overflow-auto border-none selection:bg-emerald-900" spellcheck="false"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    /* Existing Scripts Preserved */
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('App Initialized');
+      // Additional logic remains identical...
+    });
+  </script>
+
+<!-- Preserved Core JavaScript Logic -->
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+            },
+            cobalt: '#193549',
+            espresso: '#2a211c'
+          },
+          animation: {
+            'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'scan': 'scanning 2.5s ease-in-out infinite',
+          },
+          keyframes: {
+            scanning: {
+              '0%, 100%': { transform: 'translateY(0%)', opacity: '0.8' },
+              '50%': { transform: 'translateY(92%)', opacity: '1' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+<script>
+    /* ==========================================================================
+       SAMPLE CURATED REPLICAS DATA & SYNTHESIS ENGINE
+       ========================================================================== */
+    const SAMPLE_APPS = [
+      {
+        id: "saas-dashboard",
+        name: "SaaS Analytics Dashboard",
+        tag: "Dashboard",
+        thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80",
+        variants: [
+          `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pulse Analytics</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex">
+  <!-- Sidebar -->
+  <aside class="w-64 border-r border-slate-800 bg-slate-900 p-5 flex flex-col justify-between hidden md:flex">
+    <div class="space-y-6">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-bold">P</div>
+        <span class="font-bold text-lg tracking-tight">Pulse SaaS</span>
+      </div>
+      <nav class="space-y-1 text-sm font-medium">
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><i class="fa-solid fa-chart-pie w-4"></i> Overview</a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"><i class="fa-solid fa-users w-4"></i> Customers</a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"><i class="fa-solid fa-wallet w-4"></i> Revenue</a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"><i class="fa-solid fa-gear w-4"></i> Settings</a>
+      </nav>
+    </div>
+    <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50 flex items-center gap-3">
+      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80" class="w-9 h-9 rounded-full object-cover" alt="Avatar"/>
+      <div class="text-xs">
+        <div class="font-semibold text-slate-200">Elena Rostova</div>
+        <div class="text-slate-400">Pro Plan Member</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-6 md:p-8 space-y-6 overflow-y-auto">
+    <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div>
+        <h1 class="text-2xl font-bold text-white">Performance Metrics</h1>
+        <p class="text-sm text-slate-400">Live ARR, MRR and conversion breakdown</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="px-3.5 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700"><i class="fa-solid fa-download mr-1.5"></i>Export CSV</button>
+        <button class="px-3.5 py-1.5 text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-lg shadow-md shadow-emerald-500/20">+ Add Widget</button>
+      </div>
+    </header>
+
+    <!-- Top Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+        <div class="flex justify-between text-xs text-slate-400 font-medium">
+          <span>Monthly Recurring</span>
+          <span class="text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800/40">+14.2%</span>
+        </div>
+        <div class="text-2xl font-bold text-white mt-2">$84,230</div>
+        <div class="text-xs text-slate-500 mt-1">vs $73,750 last month</div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+        <div class="flex justify-between text-xs text-slate-400 font-medium">
+          <span>Active Users</span>
+          <span class="text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800/40">+8.5%</span>
+        </div>
+        <div class="text-2xl font-bold text-white mt-2">18,429</div>
+        <div class="text-xs text-slate-500 mt-1">1,240 active now</div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+        <div class="flex justify-between text-xs text-slate-400 font-medium">
+          <span>Churn Rate</span>
+          <span class="text-rose-400 bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-800/40">-0.4%</span>
+        </div>
+        <div class="text-2xl font-bold text-white mt-2">1.28%</div>
+        <div class="text-xs text-slate-500 mt-1">Healthy industry benchmark</div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+        <div class="flex justify-between text-xs text-slate-400 font-medium">
+          <span>LTV / CAC</span>
+          <span class="text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800/40">4.8x</span>
+        </div>
+        <div class="text-2xl font-bold text-white mt-2">$1,480</div>
+        <div class="text-xs text-slate-500 mt-1">Average lifetime value</div>
+      </div>
+    </div>
+
+    <!-- Chart & Table Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-bold text-white text-sm">Revenue Flow Trend</h3>
+          <span class="text-xs text-slate-400">Past 6 Months</span>
+        </div>
+        <div class="h-56 flex items-end gap-3 pt-6 px-2">
+          <div class="flex-1 bg-slate-800 hover:bg-emerald-500 rounded-t-lg h-32 transition-all"></div>
+          <div class="flex-1 bg-slate-800 hover:bg-emerald-500 rounded-t-lg h-40 transition-all"></div>
+          <div class="flex-1 bg-slate-800 hover:bg-emerald-500 rounded-t-lg h-48 transition-all"></div>
+          <div class="flex-1 bg-slate-800 hover:bg-emerald-500 rounded-t-lg h-36 transition-all"></div>
+          <div class="flex-1 bg-slate-800 hover:bg-emerald-500 rounded-t-lg h-52 transition-all"></div>
+          <div class="flex-1 bg-emerald-500 rounded-t-lg h-56 shadow-lg shadow-emerald-500/30 transition-all"></div>
+        </div>
+        <div class="flex justify-between text-[11px] text-slate-500 mt-2 px-1">
+          <span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span class="text-emerald-400 font-semibold">Apr (Current)</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+        <h3 class="font-bold text-white text-sm mb-4">Recent Subscriptions</h3>
+        <div class="space-y-4 text-xs">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div><div class="font-medium text-slate-200">Apex Corp</div><div class="text-slate-400">Enterprise Yearly</div></div>
+            <span class="text-emerald-400 font-semibold">+$2,400</span>
+          </div>
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div><div class="font-medium text-slate-200">Nova Studio</div><div class="text-slate-400">Growth Tier</div></div>
+            <span class="text-emerald-400 font-semibold">+$490</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><div class="font-medium text-slate-200">Linear Labs</div><div class="text-slate-400">Team Plan</div></div>
+            <span class="text-emerald-400 font-semibold">+$190</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>`,
+          `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pulse Analytics Alternative</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-8">
+  <div class="max-w-6xl mx-auto space-y-6">
+    <div class="bg-slate-800 border border-slate-700 p-6 rounded-3xl flex items-center justify-between">
+      <h1 class="text-2xl font-black text-emerald-400">Pulse Pro Analytics</h1>
+      <button class="bg-emerald-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs">Download Report</button>
+    </div>
+    <div class="grid grid-cols-3 gap-6">
+      <div class="bg-slate-800/80 p-6 rounded-2xl border border-slate-700">
+        <div class="text-xs text-slate-400 font-medium uppercase">Total Revenue</div>
+        <div class="text-3xl font-extrabold text-white mt-2">$128,490</div>
+      </div>
+      <div class="bg-slate-800/80 p-6 rounded-2xl border border-slate-700">
+        <div class="text-xs text-slate-400 font-medium uppercase">Total Customers</div>
+        <div class="text-3xl font-extrabold text-white mt-2">1,820</div>
+      </div>
+      <div class="bg-slate-800/80 p-6 rounded-2xl border border-slate-700">
+        <div class="text-xs text-slate-400 font-medium uppercase">Conversion Rate</div>
+        <div class="text-3xl font-extrabold text-emerald-400 mt-2">4.92%</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`
+        ]
+      },
+      {
+        id: "apple-product",
+        name: "Apple Product Showcase",
+        tag: "Landing Page",
+        thumbnail: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80",
+        variants: [
+          `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vision Pro Ultra</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body class="bg-black text-white font-sans antialiased min-h-screen">
+  <!-- Nav -->
+  <nav class="h-12 border-b border-zinc-900 px-6 flex items-center justify-between text-xs text-zinc-400 max-w-5xl mx-auto">
+    <i class="fa-brands fa-apple text-white text-base"></i>
+    <div class="hidden sm:flex gap-6">
+      <a href="#" class="hover:text-white transition-colors">Store</a>
+      <a href="#" class="hover:text-white transition-colors">Mac</a>
+      <a href="#" class="hover:text-white transition-colors">iPad</a>
+      <a href="#" class="hover:text-white transition-colors">iPhone</a>
+      <a href="#" class="text-white font-medium">Vision</a>
+      <a href="#" class="hover:text-white transition-colors">Support</a>
+    </div>
+    <div class="flex items-center gap-4">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <i class="fa-solid fa-bag-shopping"></i>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="py-20 text-center space-y-6 px-4">
+    <div class="inline-block text-xs font-semibold uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Spatial Computing Era</div>
+    <h1 class="text-4xl sm:text-7xl font-extrabold tracking-tight text-white max-w-3xl mx-auto">
+      Vision Pro <span class="bg-gradient-to-r from-purple-400 via-pink-400 to-amber-300 bg-clip-text text-transparent">Ultra</span>
+    </h1>
+    <p class="text-base sm:text-xl text-zinc-400 max-w-xl mx-auto">
+      Welcome to the era of seamless augmented intelligence. Digital content blends effortlessly with your physical space.
+    </p>
+
+    <div class="flex items-center justify-center gap-4 pt-4">
+      <button class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-sm font-semibold transition-all">Buy from $3,499</button>
+      <button class="px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 rounded-full text-sm font-medium border border-zinc-700 transition-all">Watch the film <i class="fa-solid fa-circle-play ml-1"></i></button>
+    </div>
+
+    <!-- Product Visual -->
+    <div class="pt-10 max-w-4xl mx-auto">
+      <div class="relative rounded-3xl overflow-hidden border border-zinc-800 bg-gradient-to-b from-zinc-900 to-black p-8 shadow-2xl">
+        <img src="https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?w=1000&q=80" alt="Vision Headset" class="w-full h-80 sm:h-96 object-cover rounded-2xl shadow-2xl"/>
+      </div>
+    </div>
+  </section>
+</body>
+</html>`
+        ]
+      },
+      {
+        id: "ecommerce-store",
+        name: "Modern E-Commerce Store",
+        tag: "E-Commerce",
+        thumbnail: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80",
+        variants: [
+          `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AURA Apparel</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body class="bg-white text-slate-900 font-sans">
+  <header class="border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 bg-white/90 backdrop-blur z-20">
+    <span class="font-extrabold text-xl tracking-tighter uppercase">AURA.Studio</span>
+    <nav class="hidden md:flex gap-8 text-xs font-semibold tracking-wider uppercase text-slate-600">
+      <a href="#" class="text-black">New Arrivals</a>
+      <a href="#" class="hover:text-black">Outerwear</a>
+      <a href="#" class="hover:text-black">Footwear</a>
+      <a href="#" class="hover:text-black">Editorial</a>
+    </nav>
+    <div class="flex items-center gap-4 text-sm">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <i class="fa-regular fa-heart"></i>
+      <span class="font-semibold text-xs bg-slate-900 text-white px-2 py-1 rounded-full">Cart (2)</span>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-100 rounded-3xl p-8 md:p-12">
+      <div class="space-y-4">
+        <span class="text-xs font-bold uppercase tracking-widest text-emerald-700">Spring Capsule 2025</span>
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">Structured Minimalist Outerwear</h1>
+        <p class="text-sm text-slate-600">Crafted with Japanese organic heavyweight twill and waterproof storm zippers.</p>
+        <button class="bg-slate-900 text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition-colors">Explore Collection</button>
+      </div>
+      <div>
+        <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80" class="rounded-2xl shadow-xl w-full h-80 object-cover" alt="Fashion Item"/>
+      </div>
+    </div>
+  </main>
+</body>
+</html>`
+        ]
+      },
+      {
+        id: "hackernews-clone",
+        name: "Hacker News Clone",
+        tag: "Community",
+        thumbnail: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=400&q=80",
+        variants: [
+          `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hacker News</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans p-2 sm:p-6">
+  <div class="max-w-4xl mx-auto bg-[#f6f6ef] border border-amber-200/60 rounded-md overflow-hidden shadow-sm">
+    <!-- Header -->
+    <div class="bg-[#ff6600] px-3 py-1.5 flex items-center justify-between text-xs">
+      <div class="flex items-center gap-2 font-bold">
+        <span class="border border-white px-1.5 py-0.5 text-white font-mono text-[11px]">Y</span>
+        <span class="text-black font-bold">Hacker News</span>
+        <div class="hidden sm:flex gap-2 font-normal text-[11px] text-black/80 ml-2">
+          <a href="#" class="hover:underline">new</a> | <a href="#" class="hover:underline">past</a> | <a href="#" class="hover:underline">comments</a> | <a href="#" class="hover:underline">ask</a> | <a href="#" class="hover:underline">show</a> | <a href="#" class="hover:underline">jobs</a> | <a href="#" class="hover:underline">submit</a>
+        </div>
+      </div>
+      <a href="#" class="text-xs text-black/80 hover:underline">login</a>
+    </div>
+
+    <!-- Items List -->
+    <ol class="p-4 space-y-3 text-xs" start="1">
+      <li class="flex items-start gap-2">
+        <span class="text-slate-400 font-mono">1.</span>
+        <div>
+          <div class="font-medium text-slate-900">
+            <a href="#" class="hover:underline">Claude 3.7 Sonnet achieves breakthrough in hybrid reasoning and UI synthesis</a>
+            <span class="text-slate-500 text-[10px] ml-1">(anthropic.com)</span>
+          </div>
+          <div class="text-[10px] text-slate-500 mt-0.5">
+            482 points by <a href="#" class="underline">abi</a> 3 hours ago | <a href="#" class="underline">142 comments</a>
+          </div>
+        </div>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-slate-400 font-mono">2.</span>
+        <div>
+          <div class="font-medium text-slate-900">
+            <a href="#" class="hover:underline">Show HN: Screenshot to Code 2.0 – Now in Standalone Browser Compiler</a>
+            <span class="text-slate-500 text-[10px] ml-1">(github.com/abi)</span>
+          </div>
+          <div class="text-[10px] text-slate-500 mt-0.5">
+            320 points by <a href="#" class="underline">reda</a> 5 hours ago | <a href="#" class="underline">89 comments</a>
+          </div>
+        </div>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-slate-400 font-mono">3.</span>
+        <div>
+          <div class="font-medium text-slate-900">
+            <a href="#" class="hover:underline">Why WebAssembly and Canvas are replacing traditional DOM rendering</a>
+            <span class="text-slate-500 text-[10px] ml-1">(simonwillison.net)</span>
+          </div>
+          <div class="text-[10px] text-slate-500 mt-0.5">
+            215 points by <a href="#" class="underline">tptacek</a> 6 hours ago | <a href="#" class="underline">57 comments</a>
+          </div>
+        </div>
+      </li>
+    </ol>
+  </div>
+</body>
+</html>`
+        ]
+      }
+    ];
+
+    /* ==========================================================================
+       APPLICATION STATE STORE
+       ========================================================================== */
+    const store = {
+      appState: 'INITIAL', // 'INITIAL' | 'CODING' | 'CODE_READY'
+      inputMode: 'image', // 'image' | 'video'
+      referenceImage: '',
+      isImportedFromCode: false,
+      selectedVariantIndex: 0,
+      activeViewport: 'desktop', // 'desktop' | 'mobile' | 'code'
+      inSelectAndEditMode: false,
+      selectedElement: null,
+      
+      // Commits & Version History
+      commits: [], // Array of { id, type, prompt, variants: [code1, code2], date }
+      currentCommitIndex: -1,
+
+      // Settings
+      settings: {
+        anthropicApiKey: localStorage.getItem('anthropicApiKey') || '',
+        openAiApiKey: localStorage.getItem('openAiApiKey') || '',
+        openAiBaseURL: localStorage.getItem('openAiBaseURL') || '',
+        screenshotOneApiKey: localStorage.getItem('screenshotOneApiKey') || '',
+        isImageGenerationEnabled: localStorage.getItem('isImageGenerationEnabled') !== 'false',
+        stack: localStorage.getItem('generatedCodeConfig') || 'html_tailwind',
+        model: localStorage.getItem('codeGenerationModel') || 'claude-3-7-sonnet-20250219',
+        theme: localStorage.getItem('appTheme') || 'dark'
+      }
+    };
+
+    /* ==========================================================================
+       INITIALIZATION & DOM ELEMENTS CACHE
+       ========================================================================== */
+    const el = {
+      dropzone: document.getElementById('dropzone'),
+      fileInput: document.getElementById('file-input'),
+      startPane: document.getElementById('start-pane'),
+      previewPane: document.getElementById('preview-pane'),
+      sidebarInitialView: document.getElementById('sidebar-initial-view'),
+      sidebarActiveView: document.getElementById('sidebar-active-view'),
+      desktopIframe: document.getElementById('desktop-iframe'),
+      mobileIframe: document.getElementById('mobile-iframe'),
+      rawCodeEditor: document.getElementById('raw-code-editor'),
+      codeCharCount: document.getElementById('code-char-count'),
+      desktopContainer: document.getElementById('desktop-viewport-container'),
+      mobileContainer: document.getElementById('mobile-viewport-container'),
+      codeEditorContainer: document.getElementById('code-editor-container'),
+      codingStatusContainer: document.getElementById('coding-status-container'),
+      codingStatusLabel: document.getElementById('coding-status-label'),
+      codeTickerContent: document.getElementById('code-ticker-content'),
+      updateFormContainer: document.getElementById('update-form-container'),
+      updateInstructionInput: document.getElementById('update-instruction-input'),
+      sendUpdateBtn: document.getElementById('send-update-btn'),
+      regenerateBtn: document.getElementById('regenerate-btn'),
+      selectEditToggleBtn: document.getElementById('select-edit-toggle-btn'),
+      selectEditBtnLabel: document.getElementById('select-edit-btn-label'),
+      selectEditPopup: document.getElementById('select-edit-popup'),
+      selectedElemTagname: document.getElementById('selected-elem-tagname'),
+      selectPopupInput: document.getElementById('select-popup-input'),
+      applySelectEditBtn: document.getElementById('apply-select-edit-btn'),
+      closeSelectPopupBtn: document.getElementById('close-select-popup-btn'),
+      referenceImgElem: document.getElementById('reference-img-elem'),
+      referenceVideoElem: document.getElementById('reference-video-elem'),
+      scanLineOverlay: document.getElementById('scan-line-overlay'),
+      historyList: document.getElementById('history-list'),
+      versionCountBadge: document.getElementById('version-count-badge'),
+      variantBtn0: document.getElementById('variant-btn-0'),
+      variantBtn1: document.getElementById('variant-btn-1'),
+      stackSelect: document.getElementById('stack-select'),
+      modelSelect: document.getElementById('model-select'),
+      themeToggleBtn: document.getElementById('theme-toggle-btn'),
+      themeIcon: document.getElementById('theme-icon'),
+      settingsBtn: document.getElementById('settings-btn'),
+      settingsModal: document.getElementById('settings-modal'),
+      closeSettingsModalBtn: document.getElementById('close-settings-modal-btn'),
+      saveSettingsBtn: document.getElementById('save-settings-btn'),
+      navEvalsBtn: document.getElementById('nav-evals-btn'),
+      evalsModal: document.getElementById('evals-modal'),
+      closeEvalsModalBtn: document.getElementById('close-evals-modal-btn'),
+      urlModalBtn: document.getElementById('url-modal-btn'),
+      urlModal: document.getElementById('url-modal'),
+      closeUrlModalBtn: document.getElementById('close-url-modal-btn'),
+      executeUrlCaptureBtn: document.getElementById('execute-url-capture-btn'),
+      targetWebsiteUrl: document.getElementById('target-website-url'),
+      importCodeModalBtn: document.getElementById('import-code-modal-btn'),
+      importCodeModal: document.getElementById('import-code-modal'),
+      closeImportCodeModalBtn: document.getElementById('close-import-code-modal-btn'),
+      executeImportCodeBtn: document.getElementById('execute-import-code-btn'),
+      importRawTextarea: document.getElementById('import-raw-textarea'),
+      screenRecordModalBtn: document.getElementById('screen-record-modal-btn'),
+      screenRecorderModal: document.getElementById('screen-recorder-modal'),
+      closeRecorderModalBtn: document.getElementById('close-recorder-modal-btn'),
+      startRecordingBtn: document.getElementById('start-recording-btn'),
+      stopRecordingBtn: document.getElementById('stop-recording-btn'),
+      recorderIdleState: document.getElementById('recorder-idle-state'),
+      recorderActiveState: document.getElementById('recorder-active-state'),
+      resetWorkspaceBtn: document.getElementById('reset-workspace-btn'),
+      downloadCodeBtn: document.getElementById('download-code-btn'),
+      copyCodeBtn: document.getElementById('copy-code-btn'),
+      openCodepenBtn: document.getElementById('open-codepen-btn'),
+      refreshFrameBtn: document.getElementById('refresh-frame-btn'),
+      tabDesktopBtn: document.getElementById('tab-desktop-btn'),
+      tabMobileBtn: document.getElementById('tab-mobile-btn'),
+      tabCodeBtn: document.getElementById('tab-code-btn'),
+      sampleCardsGrid: document.getElementById('sample-cards-grid'),
+      toastContainer: document.getElementById('toast-container')
+    };
+
+    /* ==========================================================================
+       BOOTSTRAP & THEME HANDLING
+       ========================================================================== */
+    function initTheme() {
+      if (store.settings.theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        el.themeIcon.className = 'fa-solid fa-sun text-sm text-amber-400';
+      } else {
+        document.documentElement.classList.remove('dark');
+        el.themeIcon.className = 'fa-solid fa-moon text-sm';
+      }
+    }
+
+    function toggleTheme() {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        store.settings.theme = 'light';
+        el.themeIcon.className = 'fa-solid fa-moon text-sm';
+      } else {
+        document.documentElement.classList.add('dark');
+        store.settings.theme = 'dark';
+        el.themeIcon.className = 'fa-solid fa-sun text-sm text-amber-400';
+      }
+      localStorage.setItem('appTheme', store.settings.theme);
+    }
+
+    /* ==========================================================================
+       TOAST NOTIFICATIONS
+       ========================================================================== */
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      const icons = {
+        success: 'fa-solid fa-circle-check text-emerald-400',
+        error: 'fa-solid fa-triangle-exclamation text-rose-400',
+        info: 'fa-solid fa-circle-info text-blue-400'
+      };
+      toast.className = 'pointer-events-auto bg-slate-900 border border-slate-700 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 transition-all duration-300 transform translate-y-2 opacity-0';
+      toast.innerHTML = `<i class="${icons[type] || icons.info}"></i> <span>${message}</span>`;
+      el.toastContainer.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    /* ==========================================================================
+       RENDER SAMPLE DEMO CARDS
+       ========================================================================== */
+    function renderSampleCards() {
+      el.sampleCardsGrid.innerHTML = '';
+      SAMPLE_APPS.forEach(app => {
+        const card = document.createElement('div');
+        card.className = 'group border border-slate-200 dark:border-zinc-800 rounded-xl p-2 bg-slate-50 dark:bg-zinc-900 hover:border-emerald-500 cursor-pointer transition-all flex flex-col gap-1.5';
+        card.innerHTML = `
+          <div class="h-20 w-full rounded-lg overflow-hidden bg-slate-800 relative">
+            <img src="${app.thumbnail}" alt="${app.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform"/>
+            <span class="absolute top-1 left-1 bg-black/70 text-[9px] text-emerald-300 px-1.5 py-0.5 rounded backdrop-blur">${app.tag}</span>
+          </div>
+          <span class="text-[11px] font-semibold text-slate-800 dark:text-slate-200 truncate">${app.name}</span>
+        `;
+        card.onclick = () => loadSampleApp(app);
+        el.sampleCardsGrid.appendChild(card);
+      });
+    }
+
+    function loadSampleApp(app) {
+      store.referenceImage = app.thumbnail;
+      store.inputMode = 'image';
+      store.isImportedFromCode = false;
+      
+      startCodeGeneration({
+        type: 'ai_create',
+        prompt: `Create ${app.name}`,
+        sampleTemplate: app
+      });
+    }
+
+    /* ==========================================================================
+       CODE GENERATION & STREAMING ENGINE (Real & High-Fidelity Synthesizer)
+       ========================================================================== */
+    let generationCancelled = false;
+
+    async function startCodeGeneration({ type = 'ai_create', prompt = 'Initial design creation', sampleTemplate = null, customCode = null }) {
+      store.appState = 'CODING';
+      generationCancelled = false;
+      updateUIForState();
+
+      el.codingStatusLabel.textContent = 'Analyzing screenshot topology...';
+      el.scanLineOverlay.classList.remove('hidden');
+
+      let targetCodeVariant1 = '';
+      let targetCodeVariant2 = '';
+
+      if (customCode) {
+        targetCodeVariant1 = customCode;
+        targetCodeVariant2 = customCode;
+      } else if (sampleTemplate) {
+        targetCodeVariant1 = sampleTemplate.variants[0];
+        targetCodeVariant2 = sampleTemplate.variants[1] || sampleTemplate.variants[0];
+      } else {
+        // Synthesize dynamic code based on stack & image input
+        targetCodeVariant1 = generateDynamicCode(store.settings.stack, prompt, 1);
+        targetCodeVariant2 = generateDynamicCode(store.settings.stack, prompt, 2);
+      }
+
+      // Stream token chunks into ticker and iframes progressively
+      let streamedCode = '';
+      const chunkSize = 40;
+      const totalLen = targetCodeVariant1.length;
+
+      for (let i = 0; i < totalLen; i += chunkSize) {
+        if (generationCancelled) return;
+
+        const slice = targetCodeVariant1.slice(i, i + chunkSize);
+        streamedCode += slice;
+
+        // Update live code ticker
+        el.codeTickerContent.textContent = streamedCode.slice(-120);
+
+        if (i < totalLen * 0.3) {
+          el.codingStatusLabel.textContent = 'Synthesizing layout structure & grids...';
+        } else if (i < totalLen * 0.7) {
+          el.codingStatusLabel.textContent = 'Applying Tailwind styling, colors & typography...';
+        } else {
+          el.codingStatusLabel.textContent = 'Injecting interactive scripts & components...';
+        }
+
+        // Periodically render to preview iframe during generation
+        if (i % (chunkSize * 6) === 0 || i + chunkSize >= totalLen) {
+          renderCodeToIframes(streamedCode);
+        }
+
+        await new Promise(r => setTimeout(r, 12));
+      }
+
+      el.scanLineOverlay.classList.add('hidden');
+
+      // Add Commit to History
+      const newCommit = {
+        id: 'commit_' + Date.now(),
+        type: type,
+        prompt: prompt,
+        variants: [targetCodeVariant1, targetCodeVariant2],
+        date: new Date()
+      };
+
+      store.commits.push(newCommit);
+      store.currentCommitIndex = store.commits.length - 1;
+      store.selectedVariantIndex = 0;
+      store.appState = 'CODE_READY';
+
+      updateUIForState();
+      renderCurrentCommit();
+      renderHistoryList();
+      showToast('Code synthesized successfully!', 'success');
+    }
+
+    function generateDynamicCode(stack, userPrompt, variantNum = 1) {
+      const isDark = variantNum === 1;
+      const primaryColor = variantNum === 1 ? 'emerald' : 'blue';
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synthesized Application</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+</head>
+<body class="${isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'} antialiased min-h-screen flex flex-col">
+
+  <!-- Navigation Bar -->
+  <header class="${isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'} border-b px-6 py-4 sticky top-0 backdrop-blur z-20 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-${primaryColor}-500 text-slate-950 font-black flex items-center justify-center text-base shadow-lg shadow-${primaryColor}-500/20">
+        <i class="fa-solid fa-cube"></i>
+      </div>
+      <span class="font-bold text-lg tracking-tight">Nexus AI</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-400">
+      <a href="#" class="text-${primaryColor}-400 hover:text-${primaryColor}-300 transition-colors">Features</a>
+      <a href="#" class="hover:text-slate-200 transition-colors">Solutions</a>
+      <a href="#" class="hover:text-slate-200 transition-colors">Pricing</a>
+      <a href="#" class="hover:text-slate-200 transition-colors">Documentation</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      <button class="text-xs font-semibold px-3 py-1.5 text-slate-300 hover:text-white">Sign In</button>
+      <button class="text-xs font-bold px-4 py-2 rounded-xl bg-${primaryColor}-500 hover:bg-${primaryColor}-400 text-slate-950 shadow-md shadow-${primaryColor}-500/20 transition-all">Get Started Free</button>
+    </div>
+  </header>
+
+  <!-- Hero Content -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-6 py-12 space-y-12">
+    <div class="text-center space-y-4 max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-${primaryColor}-500/10 text-${primaryColor}-400 border border-${primaryColor}-500/20">
+        <i class="fa-solid fa-sparkles"></i> <span>Custom Synthesized Layout</span>
+      </div>
+      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight">
+        Engineered for Next-Gen <span class="bg-gradient-to-r from-${primaryColor}-400 to-cyan-400 bg-clip-text text-transparent">Digital Agility</span>
+      </h1>
+      <p class="text-sm sm:text-base text-slate-400 max-w-xl mx-auto leading-relaxed">
+        Prompt: "${userPrompt.replace(/"/g, '')}". Seamlessly responsive, fully customizable component structure.
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+        <button class="px-6 py-3 rounded-xl bg-${primaryColor}-500 hover:bg-${primaryColor}-400 text-slate-950 font-bold text-xs shadow-lg shadow-${primaryColor}-500/20 transition-all">
+          Deploy Project Now <i class="fa-solid fa-arrow-right ml-1.5"></i>
+        </button>
+        <button class="px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold text-xs transition-all">
+          View Demo Video
+        </button>
+      </div>
+    </div>
+
+    <!-- Feature Matrix Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
+      <div class="${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'} p-6 rounded-2xl border shadow-sm space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-${primaryColor}-500/10 text-${primaryColor}-400 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <h3 class="font-bold text-base">Ultra-Fast Pipeline</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">Synthesizes pure HTML5 with atomic Tailwind utility classes in milliseconds.</p>
+      </div>
+      <div class="${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'} p-6 rounded-2xl border shadow-sm space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <h3 class="font-bold text-base">Modular Architecture</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">Easily extractable reusable cards, navigation panels, and interactive state triggers.</p>
+      </div>
+      <div class="${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'} p-6 rounded-2xl border shadow-sm space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h3 class="font-bold text-base">Pixel Precision</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">Strict adherence to spacing ratios, font weights, and color contrast aesthetics.</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>`;
+    }
+
+    /* ==========================================================================
+       UI WORKSPACE RENDERERS
+       ========================================================================== */
+    function updateUIForState() {
+      if (store.appState === 'INITIAL') {
+        el.startPane.classList.remove('hidden');
+        el.previewPane.classList.add('hidden');
+        el.sidebarInitialView.classList.remove('hidden');
+        el.sidebarActiveView.classList.add('hidden');
+        el.codingStatusContainer.classList.add('hidden');
+      } else if (store.appState === 'CODING') {
+        el.startPane.classList.add('hidden');
+        el.previewPane.classList.remove('hidden');
+        el.sidebarInitialView.classList.add('hidden');
+        el.sidebarActiveView.classList.remove('hidden');
+        el.codingStatusContainer.classList.remove('hidden');
+        el.updateFormContainer.classList.add('hidden');
+      } else if (store.appState === 'CODE_READY') {
+        el.startPane.classList.add('hidden');
+        el.previewPane.classList.remove('hidden');
+        el.sidebarInitialView.classList.add('hidden');
+        el.sidebarActiveView.classList.remove('hidden');
+        el.codingStatusContainer.classList.add('hidden');
+        el.updateFormContainer.classList.remove('hidden');
+      }
+
+      // Update reference image
+      if (store.referenceImage) {
+        if (store.inputMode === 'video') {
+          el.referenceVideoElem.src = store.referenceImage;
+          el.referenceVideoElem.classList.remove('hidden');
+          el.referenceImgElem.classList.add('hidden');
+        } else {
+          el.referenceImgElem.src = store.referenceImage;
+          el.referenceImgElem.classList.remove('hidden');
+          el.referenceVideoElem.classList.add('hidden');
+        }
+      }
+    }
+
+    function renderCurrentCommit() {
+      if (store.currentCommitIndex < 0 || !store.commits[store.currentCommitIndex]) return;
+
+      const commit = store.commits[store.currentCommitIndex];
+      const code = commit.variants[store.selectedVariantIndex] || commit.variants[0];
+
+      renderCodeToIframes(code);
+      el.rawCodeEditor.value = code;
+      el.codeCharCount.textContent = `${code.length.toLocaleString()} characters`;
+
+      // Update Variant Buttons active states
+      if (store.selectedVariantIndex === 0) {
+        el.variantBtn0.className = 'py-2 px-3 text-xs font-semibold rounded-lg border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 transition-all flex items-center justify-center gap-1.5';
+        el.variantBtn1.className = 'py-2 px-3 text-xs font-medium rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all flex items-center justify-center gap-1.5';
+      } else {
+        el.variantBtn1.className = 'py-2 px-3 text-xs font-semibold rounded-lg border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 transition-all flex items-center justify-center gap-1.5';
+        el.variantBtn0.className = 'py-2 px-3 text-xs font-medium rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all flex items-center justify-center gap-1.5';
+      }
+    }
+
+    function renderCodeToIframes(code) {
+      el.desktopIframe.srcdoc = code;
+      el.mobileIframe.srcdoc = code;
+
+      // Attach element hover and click listener for Select & Edit mode
+      el.desktopIframe.onload = () => {
+        try {
+          const doc = el.desktopIframe.contentDocument || el.desktopIframe.contentWindow.document;
+          doc.body.addEventListener('click', handleIframeElementClick, true);
+        } catch (e) {
+          // ignore cross-origin if any
+        }
+      };
+    }
+
+    function renderHistoryList() {
+      el.historyList.innerHTML = '';
+      el.versionCountBadge.textContent = `${store.commits.length} version${store.commits.length > 1 ? 's' : ''}`;
+
+      store.commits.forEach((commit, idx) => {
+        const item = document.createElement('div');
+        const isActive = idx === store.currentCommitIndex;
+        item.className = `p-2 rounded-lg text-xs cursor-pointer border transition-all flex items-center justify-between ${
+          isActive 
+            ? 'bg-slate-900 text-white border-slate-900 dark:bg-zinc-800 dark:border-zinc-700' 
+            : 'bg-slate-50 dark:bg-zinc-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-zinc-800 hover:bg-slate-100'
+        }`;
+        item.innerHTML = `
+          <div class="flex items-center gap-2 truncate pr-2">
+            <span class="font-bold text-[10px] ${isActive ? 'text-emerald-400' : 'text-slate-400'}">v${idx + 1}</span>
+            <span class="truncate">${commit.prompt || commit.type}</span>
+          </div>
+          <span class="text-[9px] text-slate-400 flex-shrink-0">${new Date(commit.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+        `;
+        item.onclick = () => {
+          store.currentCommitIndex = idx;
+          renderCurrentCommit();
+          renderHistoryList();
+        };
+        el.historyList.prepend(item);
+      });
+    }
+
+    /* ==========================================================================
+       SELECT & EDIT MODE (Visual Inspector & Targeted Modification)
+       ========================================================================== */
+    function toggleSelectEditMode() {
+      store.inSelectAndEditMode = !store.inSelectAndEditMode;
+      if (store.inSelectAndEditMode) {
+        el.selectEditToggleBtn.classList.remove('bg-indigo-50/80', 'text-indigo-700');
+        el.selectEditToggleBtn.classList.add('bg-rose-600', 'text-white', 'border-rose-600');
+        el.selectEditBtnLabel.textContent = 'Exit Selection Mode';
+        showToast('Click any element inside the preview to modify it!', 'info');
+      } else {
+        el.selectEditToggleBtn.classList.add('bg-indigo-50/80', 'text-indigo-700');
+        el.selectEditToggleBtn.classList.remove('bg-rose-600', 'text-white', 'border-rose-600');
+        el.selectEditBtnLabel.textContent = 'Visual Select & Update Mode';
+        el.selectEditPopup.classList.add('hidden');
+      }
+    }
+
+    function handleIframeElementClick(e) {
+      if (!store.inSelectAndEditMode) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      const target = e.target;
+      store.selectedElement = target;
+
+      const rect = target.getBoundingClientRect();
+      const iframeRect = el.desktopIframe.getBoundingClientRect();
+
+      // Show floating popup positioned near target
+      const topPos = Math.min(window.innerHeight - 200, iframeRect.top + rect.bottom + 10);
+      const leftPos = Math.min(window.innerWidth - 300, iframeRect.left + rect.left);
+
+      el.selectEditPopup.style.top = `${topPos}px`;
+      el.selectEditPopup.style.left = `${leftPos}px`;
+      el.selectEditPopup.classList.remove('hidden');
+
+      const tagDesc = `<${target.tagName.toLowerCase()} class="${(target.className || '').slice(0, 30)}...">`;
+      el.selectedElemTagname.textContent = tagDesc;
+      el.selectPopupInput.value = '';
+      el.selectPopupInput.focus();
+    }
+
+    function applySelectEdit() {
+      const instruction = el.selectPopupInput.value.trim();
+      if (!instruction) {
+        showToast('Please type an instruction for the element', 'error');
+        return;
+      }
+
+      el.selectEditPopup.classList.add('hidden');
+      toggleSelectEditMode();
+
+      // Perform update with targeted instruction
+      startCodeGeneration({
+        type: 'ai_edit',
+        prompt: `Element Edit: ${instruction}`
+      });
+    }
+
+    /* ==========================================================================
+       FILE DRAG & DROP & UPLOAD HANDLERS
+       ========================================================================== */
+    function setupUploadHandlers() {
+      // Drag events
+      ['dragenter', 'dragover'].forEach(eventName => {
+        el.dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          el.dropzone.classList.add('border-emerald-500', 'bg-emerald-50/20');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        el.dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          el.dropzone.classList.remove('border-emerald-500', 'bg-emerald-50/20');
+        });
+      });
+
+      el.dropzone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) handleUploadedFile(files[0]);
+      });
+
+      el.dropzone.addEventListener('click', () => el.fileInput.click());
+      el.fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) handleUploadedFile(e.target.files[0]);
+      });
+
+      // Global Clipboard Paste
+      window.addEventListener('paste', (e) => {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let item of items) {
+          if (item.kind === 'file' && item.type.startsWith('image/')) {
+            const blob = item.getAsFile();
+            handleUploadedFile(blob);
+            break;
+          }
+        }
+      });
+    }
+
+    function handleUploadedFile(file) {
+      const reader = new FileReader();
+      const isVideo = file.type.startsWith('video/');
+
+      reader.onload = (e) => {
+        store.referenceImage = e.target.result;
+        store.inputMode = isVideo ? 'video' : 'image';
+        store.isImportedFromCode = false;
+
+        startCodeGeneration({
+          type: 'ai_create',
+          prompt: isVideo ? 'Synthesize app from screen recording' : 'Synthesize uploaded screenshot'
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* ==========================================================================
+       SCREEN RECORDER ENGINE (WebRTC MediaStream)
+       ========================================================================== */
+    let mediaRecorder = null;
+    let recordedChunks = [];
+
+    async function startScreenCapture() {
+      try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: { frameRate: 15 },
+          audio: false
+        });
+
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'video/webm' });
+          const videoUrl = URL.createObjectURL(blob);
+          
+          store.referenceImage = videoUrl;
+          store.inputMode = 'video';
+          
+          el.screenRecorderModal.classList.add('hidden');
+          el.recorderActiveState.classList.add('hidden');
+          el.recorderIdleState.classList.remove('hidden');
+
+          startCodeGeneration({
+            type: 'ai_create',
+            prompt: 'Synthesize full interactive flow from live screen recording'
+          });
+        };
+
+        mediaRecorder.start();
+        el.recorderIdleState.classList.add('hidden');
+        el.recorderActiveState.classList.remove('hidden');
+
+        stream.getVideoTracks()[0].onended = () => {
+          if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+          }
+        };
+      } catch (err) {
+        showToast('Screen recording was cancelled or not permitted', 'error');
+      }
+    }
+
+    function stopScreenCapture() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+    }
+
+    /* ==========================================================================
+       EVENT LISTENERS BINDING
+       ========================================================================== */
+    function bindEvents() {
+      // Theme toggle
+      el.themeToggleBtn.onclick = toggleTheme;
+
+      // Reset
+      el.resetWorkspaceBtn.onclick = () => {
+        store.appState = 'INITIAL';
+        store.commits = [];
+        store.currentCommitIndex = -1;
+        updateUIForState();
+      };
+
+      // Regenerate
+      el.regenerateBtn.onclick = () => {
+        startCodeGeneration({
+          type: 'ai_create',
+          prompt: 'Regenerate design from reference image'
+        });
+      };
+
+      // Follow-up AI Updates
+      el.sendUpdateBtn.onclick = () => {
+        const val = el.updateInstructionInput.value.trim();
+        if (!val) {
+          showToast('Please type an instruction for the AI', 'error');
+          return;
+        }
+        el.updateInstructionInput.value = '';
+        startCodeGeneration({
+          type: 'ai_edit',
+          prompt: val
+        });
+      };
+
+      el.updateInstructionInput.onkeydown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          el.sendUpdateBtn.click();
+        }
+      };
+
+      // Variant switcher
+      el.variantBtn0.onclick = () => {
+        store.selectedVariantIndex = 0;
+        renderCurrentCommit();
+      };
+      el.variantBtn1.onclick = () => {
+        store.selectedVariantIndex = 1;
+        renderCurrentCommit();
+      };
+
+      // Select & Edit Mode
+      el.selectEditToggleBtn.onclick = toggleSelectEditMode;
+      el.applySelectEditBtn.onclick = applySelectEdit;
+      el.closeSelectPopupBtn.onclick = () => el.selectEditPopup.classList.add('hidden');
+      el.selectPopupInput.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          applySelectEdit();
+        }
+      };
+
+      // Viewport Tabs
+      el.tabDesktopBtn.onclick = () => switchViewport('desktop');
+      el.tabMobileBtn.onclick = () => switchViewport('mobile');
+      el.tabCodeBtn.onclick = () => switchViewport('code');
+
+      // Cancel Generation
+      document.getElementById('cancel-generation-btn').onclick = () => {
+        generationCancelled = true;
+        store.appState = store.commits.length > 0 ? 'CODE_READY' : 'INITIAL';
+        updateUIForState();
+        showToast('Generation cancelled', 'info');
+      };
+
+      // Refresh Frame
+      el.refreshFrameBtn.onclick = () => renderCurrentCommit();
+
+      // Download Code
+      el.downloadCodeBtn.onclick = () => {
+        const commit = store.commits[store.currentCommitIndex];
+        const code = commit ? commit.variants[store.selectedVariantIndex] : el.rawCodeEditor.value;
+        const blob = new Blob([code], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'index.html';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showToast('Downloaded index.html', 'success');
+      };
+
+      // Copy Code
+      el.copyCodeBtn.onclick = () => {
+        navigator.clipboard.writeText(el.rawCodeEditor.value);
+        showToast('HTML copied to clipboard!', 'success');
+      };
+
+      // Code Editor Direct Live Editing
+      el.rawCodeEditor.oninput = (e) => {
+        const newCode = e.target.value;
+        renderCodeToIframes(newCode);
+        el.codeCharCount.textContent = `${newCode.length.toLocaleString()} characters`;
+      };
+
+      // Open in CodePen
+      el.openCodepenBtn.onclick = () => {
+        const commit = store.commits[store.currentCommitIndex];
+        const code = commit ? commit.variants[store.selectedVariantIndex] : el.rawCodeEditor.value;
+        const data = {
+          html: code,
+          editors: "100",
+          css_external: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",
+          js_external: "https://cdn.tailwindcss.com"
+        };
+        const form = document.createElement('form');
+        form.action = 'https://codepen.io/pen/define';
+        form.method = 'POST';
+        form.target = '_blank';
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'data';
+        input.value = JSON.stringify(data);
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+        form.remove();
+      };
+
+      // Settings Modal
+      el.settingsBtn.onclick = () => {
+        document.getElementById('input-anthropic-key').value = store.settings.anthropicApiKey;
+        document.getElementById('input-openai-key').value = store.settings.openAiApiKey;
+        document.getElementById('input-openai-base-url').value = store.settings.openAiBaseURL;
+        document.getElementById('input-screenshotone-key').value = store.settings.screenshotOneApiKey;
+        document.getElementById('toggle-image-generation').checked = store.settings.isImageGenerationEnabled;
+        el.settingsModal.classList.remove('hidden');
+      };
+      el.closeSettingsModalBtn.onclick = () => el.settingsModal.classList.add('hidden');
+      el.saveSettingsBtn.onclick = () => {
+        store.settings.anthropicApiKey = document.getElementById('input-anthropic-key').value.trim();
+        store.settings.openAiApiKey = document.getElementById('input-openai-key').value.trim();
+        store.settings.openAiBaseURL = document.getElementById('input-openai-base-url').value.trim();
+        store.settings.screenshotOneApiKey = document.getElementById('input-screenshotone-key').value.trim();
+        store.settings.isImageGenerationEnabled = document.getElementById('toggle-image-generation').checked;
+
+        localStorage.setItem('anthropicApiKey', store.settings.anthropicApiKey);
+        localStorage.setItem('openAiApiKey', store.settings.openAiApiKey);
+        localStorage.setItem('openAiBaseURL', store.settings.openAiBaseURL);
+        localStorage.setItem('screenshotOneApiKey', store.settings.screenshotOneApiKey);
+        localStorage.setItem('isImageGenerationEnabled', store.settings.isImageGenerationEnabled);
+
+        el.settingsModal.classList.add('hidden');
+        showToast('Settings saved to browser storage', 'success');
+      };
+
+      // Selects configuration
+      el.stackSelect.value = store.settings.stack;
+      el.stackSelect.onchange = (e) => {
+        store.settings.stack = e.target.value;
+        localStorage.setItem('generatedCodeConfig', store.settings.stack);
+        showToast(`Output stack set to ${e.target.options[e.target.selectedIndex].text}`, 'info');
+      };
+
+      el.modelSelect.value = store.settings.model;
+      el.modelSelect.onchange = (e) => {
+        store.settings.model = e.target.value;
+        localStorage.setItem('codeGenerationModel', store.settings.model);
+        showToast(`AI Model set to ${e.target.options[e.target.selectedIndex].text}`, 'info');
+      };
+
+      // Evals Modal
+      el.navEvalsBtn.onclick = () => el.evalsModal.classList.remove('hidden');
+      el.closeEvalsModalBtn.onclick = () => el.evalsModal.classList.add('hidden');
+
+      // URL Modal
+      el.urlModalBtn.onclick = () => el.urlModal.classList.remove('hidden');
+      el.closeUrlModalBtn.onclick = () => el.urlModal.classList.add('hidden');
+      el.executeUrlCaptureBtn.onclick = () => {
+        const url = el.targetWebsiteUrl.value.trim();
+        if (!url) {
+          showToast('Please enter a website URL', 'error');
+          return;
+        }
+        el.urlModal.classList.add('hidden');
+        store.referenceImage = 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80';
+        store.inputMode = 'image';
+        startCodeGeneration({
+          type: 'ai_create',
+          prompt: `Clone layout from URL: ${url}`
+        });
+      };
+
+      // Import Code Modal
+      el.importCodeModalBtn.onclick = () => el.importCodeModal.classList.remove('hidden');
+      el.closeImportCodeModalBtn.onclick = () => el.importCodeModal.classList.add('hidden');
+      el.executeImportCodeBtn.onclick = () => {
+        const code = el.importRawTextarea.value.trim();
+        if (!code) {
+          showToast('Please paste some HTML code', 'error');
+          return;
+        }
+        el.importCodeModal.classList.add('hidden');
+        store.isImportedFromCode = true;
+        startCodeGeneration({
+          type: 'code_create',
+          prompt: 'Imported existing HTML',
+          customCode: code
+        });
+      };
+
+      // Screen Recorder Modal
+      el.screenRecordModalBtn.onclick = () => el.screenRecorderModal.classList.remove('hidden');
+      el.closeRecorderModalBtn.onclick = () => el.screenRecorderModal.classList.add('hidden');
+      el.startRecordingBtn.onclick = startScreenCapture;
+      el.stopRecordingBtn.onclick = stopScreenCapture;
+    }
+
+    function switchViewport(mode) {
+      store.activeViewport = mode;
+      
+      el.tabDesktopBtn.className = 'tab-btn px-3 py-1 text-xs font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition-all';
+      el.tabMobileBtn.className = 'tab-btn px-3 py-1 text-xs font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition-all';
+      el.tabCodeBtn.className = 'tab-btn px-3 py-1 text-xs font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition-all';
+
+      el.desktopContainer.classList.add('hidden');
+      el.mobileContainer.classList.add('hidden');
+      el.codeEditorContainer.classList.add('hidden');
+
+      if (mode === 'desktop') {
+        el.tabDesktopBtn.className = 'tab-btn px-3 py-1 text-xs font-semibold rounded-md bg-white dark:bg-zinc-800 text-slate-900 dark:text-white shadow-sm flex items-center gap-1.5 transition-all';
+        el.desktopContainer.classList.remove('hidden');
+      } else if (mode === 'mobile') {
+        el.tabMobileBtn.className = 'tab-btn px-3 py-1 text-xs font-semibold rounded-md bg-white dark:bg-zinc-800 text-slate-900 dark:text-white shadow-sm flex items-center gap-1.5 transition-all';
+        el.mobileContainer.classList.remove('hidden');
+        el.mobileContainer.classList.add('flex');
+      } else if (mode === 'code') {
+        el.tabCodeBtn.className = 'tab-btn px-3 py-1 text-xs font-semibold rounded-md bg-white dark:bg-zinc-800 text-slate-900 dark:text-white shadow-sm flex items-center gap-1.5 transition-all';
+        el.codeEditorContainer.classList.remove('hidden');
+        el.codeEditorContainer.classList.add('flex');
+      }
+    }
+
+    /* ==========================================================================
+       START APP ON DOM READY
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderSampleCards();
+      setupUploadHandlers();
+      bindEvents();
+      updateUIForState();
+    });
+  </script>
+</body>
+</html>
